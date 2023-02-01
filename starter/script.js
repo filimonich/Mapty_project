@@ -1,19 +1,5 @@
 'use strict';
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-// 230 Project Overview
-// 231 How to Plan a Web Project
-// 232 Using the Geolocation API // Использование API геолокации
-// 233 Displaying a Map Using Leaflet Library
-// console.log(9 + 1 + 5 + 18 + 8 + 14 + 20); // 30.01.22
-// 235 Rendering Workout Input Form // Рендеринг формы ввода тренировки
-// 236 Project Architecture // Архитектура проекта
-// 237 Refactoring for Project Architecture // Рефакторинг для архитектуры проекта
-// 238 Managing Workout Data_ Creating Classes // Управление данными тренировки и создание классов
-// 239 Creating a New Workout // Создание новой тренировки
-// 240 Rendering Workouts // Рендеринг тренировок
-// 241 Move to Marker On Click // Перейти к маркеру по щелчку
-
 class Workout {
   date = new Date();
   id = (Date.now() + ``).slice(-10);
@@ -308,7 +294,3 @@ class App {
 }
 
 const app = new App();
-
-// console.log(17 + 9 + 24 + 16); // 31.01.22
-
-console.log(34 + 24 + 17); // 01.02.22
