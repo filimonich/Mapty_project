@@ -58,9 +58,9 @@ class Cycling extends Workout {
   }
 }
 
-const run1 = new Running([39, -12], 5.2, 24, 178);
-const cycling1 = new Cycling([39, -12], 27, 95, 523);
-console.log(run1, cycling1);
+// const run1 = new Running([39, -12], 5.2, 24, 178);
+// const cycling1 = new Cycling([39, -12], 27, 95, 523);
+// console.log(run1, cycling1);
 
 ////////////////////////////////////////////////////////////
 // архитектура приложения
@@ -80,11 +80,15 @@ class App {
   #workouts = [];
 
   constructor() {
+    // Получить позицию пользователя
     this._getPosition(); // Код будет выполнен в этой точке, когда прилодение будет загруженно.
 
+    // Получить данные из локального хранилища
+    this._getLocalStorage();
+
+    // Привязать обработчики событий
     // Метод HTMLFormElement.submit() позволяет отправить форму <form>.
     form.addEventListener(`submit`, this._newWorkout.bind(this));
-
     // Событие changeзапускается для элементов <input>, <select>и , <textarea>когда пользователь изменяет значение элемента. В отличие от inputсобытия, changeсобытие не обязательно запускается при каждом изменении элемента value.
     inputType.addEventListener(`change`, this._toggleElevationField);
     containerWorkouts.addEventListener(`click`, this._moveToPopup.bind(this));
@@ -108,7 +112,6 @@ class App {
     const coords = [latitude, longitude];
 
     this.#map = L.map('map').setView(coords, this.#mapZoomLevel); // переназначаем, в уже существующую переменную
-    // console.log(map);
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution:
@@ -117,6 +120,11 @@ class App {
 
     // обработка кликов на карте
     this.#map.on(`click`, this._showForm.bind(this));
+
+    // Отрисовка маркера
+    this.#workouts.forEach(work => {
+      this._renderWorkoutMarker(work);
+    });
   }
 
   _showForm(mapE) {
@@ -194,7 +202,6 @@ class App {
     }
     // И новый объект в массив тренировки
     this.#workouts.push(workout);
-    console.log(workout);
 
     // Визуализировать тренировку на карте в виде маркеров
     this._renderWorkoutMarker(workout);
@@ -205,6 +212,9 @@ class App {
     // Скрыть форму + очистить поля ввода
     // Очистка поля ввода после установки метки
     this._hideForm();
+
+    // Установить локальное хранилище на все тренировки
+    this._setLocalStorage();
   }
   _renderWorkoutMarker(workout) {
     // Display marker
@@ -271,15 +281,15 @@ class App {
     form.insertAdjacentHTML(`afterend`, html);
   }
   _moveToPopup(e) {
+    // BUGFIX: When we click on a workout before the map has loaded, we get an error. But there is an easy fix:
+    // if (!this.#map) return;
     const workoutEl = e.target.closest(`.workout`);
-    console.log(workoutEl);
 
     if (!workoutEl) return;
 
     const workout = this.#workouts.find(
       work => work.id === workoutEl.dataset.id
     );
-    console.log(workout);
 
     this.#map.setView(workout.coords, this.#mapZoomLevel, {
       animate: true,
@@ -289,7 +299,33 @@ class App {
     });
 
     // использование общедоступного интерфейса
-    workout.click();
+    // Объекты поступающие из локального хранилища, не наследуют все методы
+    // workout.click();
+  }
+
+  _setLocalStorage() {
+    // Если методу setItem() интерфейса Storage передать ключ и значение, то в хранилище будет добавлено соответствующее ключу значение, либо, если запись уже есть в хранилище, то значение по ключу будет обновлено.
+    // Метод JSON.stringify() преобразует значение JavaScript в строку JSON, возможно с заменой значений, если указана функция замены, или с включением только определённых свойств, если указан массив замены.
+    localStorage.setItem(`workouts`, JSON.stringify(this.#workouts));
+  }
+
+  _getLocalStorage() {
+    // Метод JSON.parse() разбирает строку JSON, возможно с преобразованием получаемого в процессе разбора значения.
+    // Если в метод getItem() интерфейса Storage передать ключ в качестве параметра, то метод вернёт значение, лежащее в хранилище по указанному ключу.
+    const data = JSON.parse(localStorage.getItem(`workouts`));
+
+    if (!data) return;
+
+    this.#workouts = data;
+
+    this.#workouts.forEach(work => {
+      this._renderWorkout(work);
+    });
+  }
+
+  reset() {
+    localStorage.removeItem(`workouts`);
+    location.reload();
   }
 }
 
