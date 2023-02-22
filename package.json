@@ -1,0 +1,26 @@
+{
+  "name": "mapty_project",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build index.html --dist-dir ./dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/filimonich/Mapty_project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/filimonich/Mapty_project/issues"
+  },
+  "homepage": "https://github.com/filimonich/Mapty_project#readme",
+  "dependencies": {
+    "core-js": "^3.28.0"
+  },
+  "devDependencies": {
+    "parcel": "^2.8.3"
+  }
+}
